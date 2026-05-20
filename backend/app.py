@@ -82,5 +82,8 @@ def protected():
 
 # Run the App
 if __name__ == "__main__":
+    @app.route("/")
+    def index():
+        return {"status": "EdgeVision backend is running"}
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)   # debug=False for production
