@@ -17,6 +17,8 @@ app = Flask(__name__)
 frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
 CORS(app, origins=[frontend_url])   # Allow only your frontend
 
+allowed_origins = os.environ.get("ALLOWED_ORIGINS", "").split(",")
+CORS(app, origins=allowed_origins)
 #  App Configuration
 app.config["JWT_SECRET_KEY"] = os.getenv(
     "JWT_SECRET_KEY",
