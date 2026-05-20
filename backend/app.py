@@ -77,7 +77,9 @@ def process():
             "marr_output":  os.path.basename(paths["marr_output"]),
         }), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        import traceback
+        print("PROCESSING ERROR:", traceback.format_exc())
+        return jsonify({"error": str(e), "trace": traceback.format_exc()}), 500
 
 
 @app.route("/api/image/<folder>/<filename>")
