@@ -3,7 +3,7 @@ import api from "../api/axios";
 import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL;
 
 const formatBytes = (bytes) => {
   if (!bytes) return "Unknown";
@@ -16,7 +16,7 @@ const formatBytes = (bytes) => {
 function ResultImage({ label, folder, filename, token }) {
   const [isHovered, setIsHovered] = useState(false);
   if (!filename) return null;
-  const src = `${API}/image/${folder}/${filename}`;
+  const src = `${API}/api/image/${folder}/${filename}`;
 
   const download = () => {
     fetch(src, { headers: { Authorization: `Bearer ${token}` } })
