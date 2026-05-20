@@ -3,7 +3,7 @@ import api from "../api/axios";
 import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API = "https://edge-detection-app-wslz.onrender.com/api";
 
 const formatBytes = (bytes) => {
   if (!bytes) return "Unknown";
