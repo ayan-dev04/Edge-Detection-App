@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from dotenv import load_dotenv
 from .auth_routes import auth_bp
-from edge_processor import process_image
+from .edge_processor import process_image
 import os
 
 load_dotenv()
