@@ -47,6 +47,14 @@ def allowed_file(filename):
 @app.route("/")
 def home():
     return jsonify({"message": "Edge Detection Backend Running"})
+@app.route("/api/test")
+def test():
+    try:
+        import cv2
+        import numpy as np
+        return jsonify({"cv2": cv2.__version__, "numpy": np.__version__, "status": "ok"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/process", methods=["POST"])
@@ -87,6 +95,7 @@ def serve_image(folder, filename):
 def protected():
     current_user = get_jwt_identity()
     return jsonify({"logged_in_as": current_user})
+
 
 
 # Run
