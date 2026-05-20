@@ -2,88 +2,91 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from dotenv import load_dotenv
-from auth_routes import auth_bp      # absolute import (no dot)
+from auth_routes import auth_bp
 from edge_processor import process_image
 import os
 
-# Load environment variables (local .env file, ignored on Render)
 load_dotenv()
 
 app = Flask(__name__)
 
-#  CORS Configuration
-# Get the frontend URL from environment variable (set in Render dashboard)
-# Default to localhost for development
-frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:5173")
-CORS(app, origins=[frontend_url])   # Allow only your frontend
+# CORS
+CORS(app, origins=[
+    "http://localhost:5173",
+    "https://edge-detection-app-rosy.vercel.app",
+])
 
-allowed_origins = os.environ.get("ALLOWED_ORIGINS", "").split(",")
-CORS(app, origins=allowed_origins)
-#  App Configuration
+# Config
 app.config["JWT_SECRET_KEY"] = os.getenv(
     "JWT_SECRET_KEY",
     "45ef95ed83380afe50e42ef8eb6307ee3c17004eb659cacf91c42e78b52a2475"
 )
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024   # 16 MB max upload
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 
-# Initialize JWT
 jwt = JWTManager(app)
 
-# Register authentication blueprint
-app.register_blueprint(auth_bp)
+# Blueprint — with /api prefix
+app.register_blueprint(auth_bp, url_prefix="/api")
 
-#  Folder Setup
+# Folders
 UPLOAD_FOLDER = "uploads"
-PROCESSED_FOLDER = "processed"
+RESULT_FOLDER = "results"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(PROCESSED_FOLDER, exist_ok=True)
+os.makedirs(RESULT_FOLDER, exist_ok=True)
+
+ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "bmp", "webp"}
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # Routes
 @app.route("/")
 def home():
-    return jsonify({
-        "message": "Edge Detection Backend Running",
-        "frontend_allowed": frontend_url
-    })
+    return jsonify({"message": "Edge Detection Backend Running"})
 
 
-@app.route("/process", methods=["POST"])
+@app.route("/api/process", methods=["POST"])
 @jwt_required()
 def process():
     if "image" not in request.files:
-        return jsonify({"error": "No image uploaded"}), 400
+        return jsonify({"error": "No image provided"}), 400
 
     file = request.files["image"]
-    if file.filename == "":
-        return jsonify({"error": "Empty filename"}), 400
+    if file.filename == "" or not allowed_file(file.filename):
+        return jsonify({"error": "Invalid file. Upload JPG or PNG."}), 400
 
     try:
-        # Save uploaded image
-        input_path = os.path.join(UPLOAD_FOLDER, file.filename)
-        file.save(input_path)
-
-        # Process image (edge detection)
-        output_filename = f"processed_{file.filename}"
-        output_path = os.path.join(PROCESSED_FOLDER, output_filename)
-        process_image(input_path, output_path)
-
-        return send_file(output_path, mimetype="image/png")
+        paths = process_image(file)
+        return jsonify({
+            "original":     os.path.basename(paths["original"]),
+            "canny_edges":  os.path.basename(paths["canny_edges"]),
+            "canny_output": os.path.basename(paths["canny_output"]),
+            "marr_edges":   os.path.basename(paths["marr_edges"]),
+            "marr_output":  os.path.basename(paths["marr_output"]),
+        }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-@app.route("/protected", methods=["GET"])
+@app.route("/api/image/<folder>/<filename>")
+@jwt_required()
+def serve_image(folder, filename):
+    base = RESULT_FOLDER if folder == "results" else UPLOAD_FOLDER
+    path = os.path.join(base, filename)
+    if not os.path.exists(path):
+        return jsonify({"error": "File not found"}), 404
+    return send_file(path)
+
+
+@app.route("/api/protected", methods=["GET"])
 @jwt_required()
 def protected():
     current_user = get_jwt_identity()
     return jsonify({"logged_in_as": current_user})
 
 
-# Run the App
+# Run
 if __name__ == "__main__":
-    @app.route("/")
-    def index():
-        return {"status": "EdgeVision backend is running"}
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=False)   # debug=False for production
+    app.run(host="0.0.0.0", port=port, debug=False)
