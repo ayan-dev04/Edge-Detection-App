@@ -19,7 +19,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      const { data } = await api.post("/register", form);
+      const { data } = await api.post("/api/register", form);   // /api prefix
       localStorage.setItem("token", data.token);
       localStorage.setItem("userName", data.name);
       toast.success("Account created!");
@@ -30,7 +30,7 @@ export default function Register() {
       setLoading(false);
     }
   };
-
+}
   return (
     <div className="auth-page">
       <div className="glass-auth-card">

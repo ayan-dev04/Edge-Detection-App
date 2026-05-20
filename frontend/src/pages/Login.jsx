@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../api/axios";
+import api from "../api/axios";   // <-- import the configured axios instance
 import toast from "react-hot-toast";
 
 export default function Login() {
@@ -15,7 +15,8 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await api.post("/login", form);
+      // Use the api instance – baseURL is already set
+      const { data } = await api.post("/api/login", form);   // note the /api prefix
       localStorage.setItem("token", data.token);
       localStorage.setItem("userName", data.name);
       toast.success("Welcome back, " + data.name + "!");
