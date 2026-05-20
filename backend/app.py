@@ -10,7 +10,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173"])   # Vite dev server
 
-app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "change-me")
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "45ef95ed83380afe50e42ef8eb6307ee3c17004eb659cacf91c42e78b52a2475")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024   # 16 MB max upload
 
 jwt = JWTManager(app)
