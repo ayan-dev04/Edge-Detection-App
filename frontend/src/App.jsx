@@ -7,12 +7,12 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter>   {/* ← NO basename here */}
       <Toaster position="top-right" />
       <Routes>
-        <Route path="/"          element={<Navigate to="/login" />} />
-        <Route path="/login"     element={<Login />} />
-        <Route path="/register"  element={<Register />} />
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route
           path="/processor"
           element={

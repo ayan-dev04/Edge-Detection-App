@@ -4,8 +4,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/static/', // Tells Vite to prefix all asset URLs with /static/
-  build: {
-    outDir: 'dist', // Build output directory
-  },
+  base: process.env.NODE_ENV === 'production' ? '/static/' : '/',
 })
