@@ -13,8 +13,7 @@ load_dotenv()
 app = Flask(__name__)
 
 # Enable CORS for frontend
-CORS(app, origins=["http://localhost:5173"])
-
+CORS(app)
 # App configuration
 app.config["JWT_SECRET_KEY"] = os.getenv(
     "JWT_SECRET_KEY",
