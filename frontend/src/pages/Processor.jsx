@@ -3,7 +3,7 @@ import api from "../api/axios";
 import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 
-const API = "https://edge-detection-app-wslz.onrender.com/api";
+const API = "https://edge-detection-app-wslz.onrender.com";
 
 const formatBytes = (bytes) => {
   if (!bytes) return "Unknown";

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://edge-detection-app-wslz.onrender.com/api",
+  baseURL: "https://edge-detection-app-wslz.onrender.com",
 });
 
 api.interceptors.request.use((config) => {

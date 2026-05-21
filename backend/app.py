@@ -16,7 +16,7 @@ CORS(app, origins=[
     "http://localhost:5173",
     "https://edge-detection-app-rosy.vercel.app",
     "https://edge-detection-app-git-main-ayan-ansaris-projects-37f8a565.vercel.app",
-     re.compile(r"https://.*\.vercel\.app")
+    re.compile(r"https://.*\.vercel\.app"),
 ])
 
 # Config
